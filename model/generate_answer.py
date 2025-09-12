@@ -1,13 +1,8 @@
 import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-MODEL_HF = "jaafar-ai/miniChat"
-
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_HF)
-tokenizer = AutoTokenizer.from_pretrained(MODEL_HF)
-
-
+# الكلمات المفتاحية
 allowed_keywords = [
+    "مرحبا" ,"السلام وعليكم","كيفك","صباح الخير","مساء النور",
     "سكري", "السكري", "داء السكري", "مرض السكري", "مرض السكر", "السكر",
     "النوع الأول", "النوع الثاني", "سكري الحمل", "سكر الأطفال", "سكر المراهقين",
     "سكر", "غلوكوز", "جلوكوز", "فركتوز", "الهيموغلوبين", "HbA1c", "التراكمي",
@@ -30,6 +25,7 @@ allowed_keywords = [
     "حماض كيتوني", "كيتونات", "طبيب غدد", "طبيب سكري", "متابعة السكر"
 ]
 
+# دالة توليد الإجابة
 def safe_generate_answer(model, tokenizer, question, allowed_keywords, max_len=64, num_beams=4):
     if not any(keyword in question for keyword in allowed_keywords):
         return "عذرًا، أنا مخصص للإجابة فقط عن أسئلة مرض السكري."
@@ -49,6 +45,3 @@ def safe_generate_answer(model, tokenizer, question, allowed_keywords, max_len=6
             early_stopping=True
         )
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-
-
