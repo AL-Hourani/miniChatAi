@@ -3,6 +3,9 @@ from pydantic import BaseModel
 import requests
 import os
 
+
+# my model in hugging face ....... 
+
 MODEL_HF = "jaafar-ai/miniChat"  
 API_URL = f"https://api-inference.huggingface.co/models/{MODEL_HF}"
 
