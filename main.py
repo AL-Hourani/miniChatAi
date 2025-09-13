@@ -1,32 +1,30 @@
 # main.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
-import torch
-from model.generate_answer import safe_generate_answer, allowed_keywords
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from gradio_client import Client
 
-MODEL_HF = "jaafar-ai/miniChat"
-model: Optional[AutoModelForSeq2SeqLM] = None
-tokenizer: Optional[AutoTokenizer] = None
 
 app = FastAPI(title="Mini Chat API")
+
+
+HF_SPACE = "jaafar-ai/miniChatModel"
+
 
 class QuestionRequest(BaseModel):
     question: str
 
+
 class AnswerResponse(BaseModel):
     answer: str
 
+
+client = Client(HF_SPACE)
+
 @app.post("/ask", response_model=AnswerResponse)
 async def ask_question(request: QuestionRequest):
-    global model, tokenizer
     try:
-        if model is None or tokenizer is None:
-            model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_HF , torch_dtype=torch.float16)
-            tokenizer = AutoTokenizer.from_pretrained(MODEL_HF)
-
-        answer = safe_generate_answer(model, tokenizer, request.question, allowed_keywords)
-        return AnswerResponse(answer=answer)
+       
+        response = client.predict(request.question, fn_index=0)
+        return AnswerResponse(answer=response)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
