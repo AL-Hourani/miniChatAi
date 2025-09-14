@@ -1,11 +1,19 @@
 # main.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from gradio_client import Client
 
 
 app = FastAPI(title="Mini Chat API")
-
+app.add_middleware (
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    
+)
 
 HF_SPACE = "jaafar-ai/miniChatModel"
 
